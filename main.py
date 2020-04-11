@@ -108,6 +108,8 @@ def generate(cut_type, choice, fabric_type):
     if len(fabric_name) > 22:
         draw.text((NAME_X, LINE1_Y), fabric_name_1, font=font, fill=TEXT_COLOR)
         draw.text((NAME_X, LINE2_Y), fabric_name_2, font=font, fill=TEXT_COLOR)
+
+        
     else:
         draw.text((NAME_X, LINE_Y), fabric_name, font=font, fill=TEXT_COLOR)
     ''' Client link if provided '''
@@ -132,7 +134,7 @@ def generate(cut_type, choice, fabric_type):
     template.paste(handIcon, (WIDTH-HAND_X-85,HAND_Y), handIcon)
     draw.text((WIDTH-HAND_X+60, LINE1_Y), WEBSITE_LINK, font=font, fill=TEXT_COLOR)
     draw.text((WIDTH-HAND_X+60, LINE2_Y), FABRIC_ID , font=font, fill=TEXT_COLOR)
-    if len(fabric_name) > 21:
+    if len(fabric_name) > 22:
         draw.text((WIDTH-LOGO_X-125-(len(fabric_name_1)*CHAR_WIDTH), LINE1_Y), fabric_name_1, font=font, fill=TEXT_COLOR)
         draw.text((WIDTH-LOGO_X-125-(len(fabric_name_2)*CHAR_WIDTH), LINE2_Y), fabric_name_2, font=font, fill=TEXT_COLOR)
     else:
