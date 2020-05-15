@@ -1,6 +1,8 @@
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import random
+import string
 
 ''' One fabric part '''
 class FabricPart:
@@ -111,9 +113,15 @@ def returnLines(fabric_name):
             break
     return (firstLine, ' '.join(words[i:]))
 
+
+''' Generate random string '''
+def randomString():
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(5))
+
 ''' Change template color '''
-def setTempColor(temp, hex, path, HEADER):
+def setTempColor(temp, hex, path, HEADER, randomTemplate):
     rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
     image = Image.open(path + temp +'-source.jpg')
     image.paste( rgb, [0,HEADER,image.size[0],image.size[1]])
-    image.save(path + temp + '-template.jpg', "JPEG")
+    image.save(path + temp + '-' + randomTemplate + '-template.jpg', "JPEG")

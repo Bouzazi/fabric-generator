@@ -10,6 +10,7 @@ from functions import returnFabricTypeName
 from functions import returnFabricParts
 from functions import returnLines
 from functions import setTempColor
+from functions import randomString
 
 ''' Time Initialistaion '''
 startTime = datetime.now()
@@ -24,7 +25,7 @@ seamless = int(sys.argv[5]) # Seamless check (0/1)
 inches = int(sys.argv[6]) # Inches
 keep_ratio = int(sys.argv[7]) # Respect ratio, for pictures in fabric
 background_color = sys.argv[8] # Custom color
-path1 = sys.argv[9] # First path, for file source files location.
+path1 = sys.argv[9] # First path, for source files (images, fonts) location.
 path2 = sys.argv[10] # Second path, for generated files location.
 path3 = sys.argv[11] # Third path, for masterfiles location.
 if sys.argv[12] != 'all': # All variations choice
@@ -61,8 +62,9 @@ SEAMLESS = False if seamless == 0 else True
 INCHES = inches * 150 # 150 DPI (Pixels per Inche)
 
 ''' Change templates colors to custom color '''
-setTempColor('42', background_color, path1, HEADER)
-setTempColor('56', background_color, path1, HEADER)
+randomTemplateString = randomString()
+setTempColor('42', background_color, path1, HEADER, randomTemplateString)
+setTempColor('56', background_color, path1, HEADER, randomTemplateString)
 
 ''' Split name to two string if long '''
 if len(fabric_name) > 22:
@@ -80,7 +82,7 @@ fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert("RGB
 ''' Generates one image and saves it '''
 def generate(cut_type, choice, fabric_type):
     ''' Based on the size choice, select a template. '''
-    template = Image.open(path1 + str(choice)+"-template.jpg")
+    template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +"-template.jpg")
 
     ''' Draw variable. '''
     draw = ImageDraw.Draw(template)
@@ -195,3 +197,6 @@ else:
 
 ''' Script finished execution '''
 print("Generation completed, took {}".format(datetime.now() - startTime))
+print("Cleaning...")
+os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
+os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg")

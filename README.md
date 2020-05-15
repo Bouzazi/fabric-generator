@@ -8,3 +8,6 @@
     python3 main.py fabric_name fabric_location jpg 123456-12345 1 2 0 FFFFFF path1 path2 path3 42 quarter 36evenweave
     python3 main.py fabric_name fabric_location jpg 123456-12345 0 2 0 FFFFFF path1 path2 path3 all StitcheryXpress.com
     python3 main.py fabric_name fabric_location jpg 123456-12345 1 2 0 FFFFFF path1 path2 path3 all
+
+
+    >py main.py test fabric jpg 123456-12345 0 2 0 FFFFFF C:\Users\Bouzazi\Documents\Gev\fabric-generator\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\generated\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\masterfiles\ all
