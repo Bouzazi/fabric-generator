@@ -56,7 +56,7 @@ LOGO_LOCATION = path1 + "logoF_110.png"
 HAND_ICON_LOCATION = path1 + "handIcon_80.png"
 CMYK_LOCATION = path1 + "cmyk.png"
 FONT_LOCATION = path1 + "cour.ttf"
-CLIENT_LINK = "for "+client_link if len(client_link) != 0 else '' # < 20 characters
+CLIENT_LINK = client_link if len(client_link) != 0 else '' # < 20 characters
 FABRIC_ID = "#"+str(fabric_id)
 SEAMLESS = False if seamless == 0 else True
 INCHES = inches * 150 # 150 DPI (Pixels per Inche)

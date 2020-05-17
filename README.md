@@ -11,3 +11,5 @@
 
 
     >py main.py test fabric jpg 123456-12345 0 2 0 FFFFFF C:\Users\Bouzazi\Documents\Gev\fabric-generator\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\generated\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\masterfiles\ all
+
+    >py main.py test fabric jpg 123456-12345 0 2 0 FFFFFF C:\Users\Bouzazi\Documents\Gev\fabric-generator\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\generated\ C:\Users\Bouzazi\Documents\Gev\fabric-generator\masterfiles\ 42 quarter 36evenweave StitcheryXpress.com
