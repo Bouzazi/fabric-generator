@@ -71,13 +71,13 @@ if len(fabric_name) > 22:
     fabric_name_1, fabric_name_2 = returnLines(fabric_name)
 
 ''' Open template objects for later manipulation. '''
-cmyk = Image.open(CMYK_LOCATION).convert("RGBA")
+cmyk = Image.open(CMYK_LOCATION).convert('RGBA')
 logo = Image.open(LOGO_LOCATION)
 handIcon = Image.open(HAND_ICON_LOCATION)
 font = ImageFont.truetype(FONT_LOCATION, FONT_SIZE)
 
 ''' Open the fabric file + convert it to RGBA for later manipulation. '''
-fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert("RGBA")
+fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert('RGBA')
 
 ''' Generates one image and saves it '''
 def generate(cut_type, choice, fabric_type):
@@ -183,7 +183,7 @@ def generate(cut_type, choice, fabric_type):
     file_name = fabric_name.replace(' ', '_')+"-"+cut_type+"-"+returnFabricTypeName(fabric_type)+"-36x"+str(choice)+".jpg"
 
     ''' Finally save the image as JPEG '''
-    template.save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG")
+    template.convert('CMYK').save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG")
 
 ''' Generate all variations or one specific '''
 if sys.argv[12] == 'all':
