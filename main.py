@@ -11,6 +11,12 @@ from functions import returnFabricParts
 from functions import returnLines
 from functions import setTempColor
 from functions import randomString
+''' Import logging '''
+import logging
+import traceback
+
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%a, %d %b %Y %H:%M:%S', filename='errors.log', filemode='a')
+
 
 ''' Time Initialistaion '''
 startTime = datetime.now()
@@ -60,6 +66,7 @@ CLIENT_LINK = client_link if len(client_link) != 0 else '' # < 20 characters
 FABRIC_ID = "#"+str(fabric_id)
 SEAMLESS = False if seamless == 0 else True
 INCHES = inches * 150 # 150 DPI (Pixels per Inche)
+CLEANED = False
 
 ''' Change templates colors to custom color '''
 randomTemplateString = randomString()
@@ -70,19 +77,27 @@ setTempColor('56', background_color, path1, HEADER, randomTemplateString)
 if len(fabric_name) > 22:
     fabric_name_1, fabric_name_2 = returnLines(fabric_name)
 
+
+''' Open the fabric file + convert it for later manipulation. '''
+fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension)
+fabric_mode = fabric.mode
+print("Image mode: {}".format(fabric.mode))
+
+convert_mode = "RGBA"
+print("Convert mode: {}".format(convert_mode))
+
+fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert(convert_mode)
+
 ''' Open template objects for later manipulation. '''
-cmyk = Image.open(CMYK_LOCATION).convert('RGBA')
+cmyk = Image.open(CMYK_LOCATION).convert(convert_mode)
 logo = Image.open(LOGO_LOCATION)
 handIcon = Image.open(HAND_ICON_LOCATION)
 font = ImageFont.truetype(FONT_LOCATION, FONT_SIZE)
 
-''' Open the fabric file + convert it to RGBA for later manipulation. '''
-fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert('RGBA')
-
 ''' Generates one image and saves it '''
 def generate(cut_type, choice, fabric_type):
     ''' Based on the size choice, select a template. '''
-    template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +"-template.jpg")
+    template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +"-template.jpg").convert(convert_mode)
 
     ''' Draw variable. '''
     draw = ImageDraw.Draw(template)
@@ -143,7 +158,7 @@ def generate(cut_type, choice, fabric_type):
         draw.text((WIDTH-LOGO_X-125-(len(fabric_name)*CHAR_WIDTH), LINE_Y), fabric_name, font=font, fill=TEXT_COLOR)
 
     ''' Lower stamp '''
-    uppper_stamp = template.crop((0,0,WIDTH,150)).convert('RGBA').rotate(180)
+    uppper_stamp = template.crop((0,0,WIDTH,150)).convert(convert_mode).rotate(180)
     template.paste(uppper_stamp, (0, 8250), uppper_stamp) if choice == 56 else template.paste(uppper_stamp, (0, 6150), uppper_stamp)
 
     ''' Resizing and pasting fabric '''
@@ -183,7 +198,7 @@ def generate(cut_type, choice, fabric_type):
     file_name = fabric_name.replace(' ', '_')+"-"+cut_type+"-"+returnFabricTypeName(fabric_type)+"-36x"+str(choice)+".jpg"
 
     ''' Finally save the image as JPEG '''
-    template.convert('CMYK').save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG")
+    template.convert(fabric_mode).save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", quality=100)
 
 ''' Generate all variations or one specific '''
 if sys.argv[12] == 'all':
@@ -193,10 +208,22 @@ if sys.argv[12] == 'all':
             for fabric_type in FABRIC_TYPES:
                 generate(cut_type, choice, fabric_type)
 else:
-    generate(cut_type, choice, fabric_type)
+    try:
+        generate(cut_type, choice, fabric_type)
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print("Script stopped with an error, cleaning...")
+        os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
+        os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg") 
+        CLEANED = True
+
+    
 
 ''' Script finished execution '''
-print("Generation completed, took {}".format(datetime.now() - startTime))
-print("Cleaning...")
-os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
-os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg")
+if CLEANED == False:
+    print("Generation completed, took {}".format(datetime.now() - startTime))
+    print("Cleaning...")
+    os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
+    os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg")
+else:
+    print("Generation failed, please check the error log.")
