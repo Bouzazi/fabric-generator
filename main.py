@@ -70,8 +70,16 @@ CLEANED = False
 
 ''' Change templates colors to custom color '''
 randomTemplateString = randomString()
-setTempColor('42', background_color, path1, HEADER, randomTemplateString)
-setTempColor('56', background_color, path1, HEADER, randomTemplateString)
+setTempColor('42', background_color, path1, HEADER, randomTemplateString, seamless)
+setTempColor('56', background_color, path1, HEADER, randomTemplateString, seamless)
+
+''' Seamless compatibility '''
+if seamless:
+    template_type = "-template_seamless.jpg"
+    WIDTH = SEAMLESS_WIDTH
+else:
+    template_type = "-template.jpg"
+    WIDTH = NORMAL_WIDTH
 
 ''' Split name to two string if long '''
 if len(fabric_name) > 22:
@@ -97,7 +105,7 @@ font = ImageFont.truetype(FONT_LOCATION, FONT_SIZE)
 ''' Generates one image and saves it '''
 def generate(cut_type, choice, fabric_type):
     ''' Based on the size choice, select a template. '''
-    template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +"-template.jpg").convert(convert_mode)
+    template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +template_type).convert(convert_mode)
 
     ''' Draw variable. '''
     draw = ImageDraw.Draw(template)
@@ -125,8 +133,6 @@ def generate(cut_type, choice, fabric_type):
     if len(fabric_name) > 22:
         draw.text((NAME_X, LINE1_Y), fabric_name_1, font=font, fill=TEXT_COLOR)
         draw.text((NAME_X, LINE2_Y), fabric_name_2, font=font, fill=TEXT_COLOR)
-
-        
     else:
         draw.text((NAME_X, LINE_Y), fabric_name, font=font, fill=TEXT_COLOR)
     ''' Client link if provided '''
@@ -213,8 +219,8 @@ else:
     except Exception as e:
         logging.error(traceback.format_exc())
         print("Script stopped with an error, cleaning...")
-        os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
-        os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg") 
+        os.remove(path1 + '42-'+ randomTemplateString + template_type)
+        os.remove(path1 + '56-'+ randomTemplateString + template_type) 
         CLEANED = True
 
     
@@ -223,7 +229,7 @@ else:
 if CLEANED == False:
     print("Generation completed, took {}".format(datetime.now() - startTime))
     print("Cleaning...")
-    os.remove(path1 + '42-'+ randomTemplateString +"-template.jpg")
-    os.remove(path1 + '56-'+ randomTemplateString +"-template.jpg")
+    os.remove(path1 + '42-'+ randomTemplateString + template_type)
+    os.remove(path1 + '56-'+ randomTemplateString + template_type)
 else:
     print("Generation failed, please check the error log.")

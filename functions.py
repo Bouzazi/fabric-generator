@@ -120,8 +120,10 @@ def randomString():
     return ''.join(random.choice(letters) for i in range(5))
 
 ''' Change template color '''
-def setTempColor(temp, hex, path, HEADER, randomTemplate):
+def setTempColor(temp, hex, path, HEADER, randomTemplate, seamless):
+    source = "-source.jpg" if seamless == 0 else "-source_seamless.jpg"
+    template = "-template.jpg" if seamless == 0 else "-template_seamless.jpg"
     rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
-    image = Image.open(path + temp +'-source.jpg')
+    image = Image.open(path + temp + source)
     image.paste( rgb, [0,HEADER,image.size[0],image.size[1]])
-    image.save(path + temp + '-' + randomTemplate + '-template.jpg', "JPEG")
+    image.save(path + temp + '-' + randomTemplate + template, "JPEG")
