@@ -3,6 +3,9 @@ from PIL import ImageFont
 from PIL import ImageDraw
 import random
 import string
+''' Import config file '''
+from config import NORMAL_WIDTH
+from config import SEAMLESS_WIDTH
 
 ''' One fabric part '''
 class FabricPart:
@@ -12,7 +15,7 @@ class FabricPart:
 
 ''' Return fabric parts to just paste in a loop '''
 def returnFabricParts(cut_type, choice, seamless, INCHES, HEADER):
-    WIDTH = 5490
+    WIDTH = NORMAL_WIDTH if seamless == 0 else SEAMLESS_WIDTH  
     HEIGHT = 8400 if choice == 56 else 6300
     SAFETY_SPRAY = 37
     if INCHES != 0: HEADER = 0
