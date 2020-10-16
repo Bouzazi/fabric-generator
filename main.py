@@ -14,6 +14,8 @@ from functions import randomString
 ''' Import logging '''
 import logging
 import traceback
+''' Exif manipulation '''
+import piexif
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%a, %d %b %Y %H:%M:%S', filename='errors.log', filemode='a')
 
@@ -106,6 +108,16 @@ font = ImageFont.truetype(FONT_LOCATION, FONT_SIZE)
 def generate(cut_type, choice, fabric_type):
     ''' Based on the size choice, select a template. '''
     template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +template_type).convert(convert_mode)
+    
+    ''' Saving metadata from template to result file '''
+    ''' Loaded to readable format '''
+    exif_dict = piexif.load(template.info.get('exif'))
+    ''' Changes "Program name" attribute '''
+    exif_dict["0th"][305] = GENERATOR_NAME
+    ''' Resets thumbnail to later get automatically generated '''
+    exif_dict.pop('thumbnail', None)
+    ''' Dumpted to bytes '''
+    exif_bytes = piexif.dump(exif_dict)
 
     ''' Draw variable. '''
     draw = ImageDraw.Draw(template)
@@ -204,7 +216,7 @@ def generate(cut_type, choice, fabric_type):
     file_name = fabric_name.replace(' ', '_')+"-"+cut_type+"-"+returnFabricTypeName(fabric_type)+"-36x"+str(choice)+".jpg"
 
     ''' Finally save the image as JPEG '''
-    template.convert(fabric_mode).save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", quality=100)
+    template.convert(fabric_mode).save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", quality=100, exif=exif_bytes)
 
 ''' Generate all variations or one specific '''
 if sys.argv[12] == 'all':
@@ -222,8 +234,6 @@ else:
         os.remove(path1 + '42-'+ randomTemplateString + template_type)
         os.remove(path1 + '56-'+ randomTemplateString + template_type) 
         CLEANED = True
-
-    
 
 ''' Script finished execution '''
 if CLEANED == False:

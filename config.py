@@ -1,3 +1,4 @@
+GENERATOR_NAME = "FabricGen v1.0"
 FONT_SIZE = 46
 WEBSITE_LINK = "www.FabricFlair.com"
 FABRIC_TYPES = ['14aida', '16aida', '18aida', '28evenweave', '32evenweave', '36evenweave', '28linen', '32linen', '36linen', '40linen']
