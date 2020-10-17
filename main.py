@@ -1,7 +1,9 @@
-import sys, os
+import sys, os, io
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+from PIL import ImageCms
+
 from datetime import datetime
 ''' Import config file '''
 from config import *
@@ -110,8 +112,13 @@ def generate(cut_type, choice, fabric_type):
     template = Image.open(path1 + str(choice)+'-'+ randomTemplateString +template_type).convert(convert_mode)
     
     ''' Saving metadata from template to result file '''
-    ''' Loaded to readable format '''
+    ''' Exif Loaded to readable format '''
     exif_dict = piexif.load(template.info.get('exif'))
+    ''' ICC Profile '''
+    if (fabric_mode != "CMYK"):
+        icc_profile = template.info.get('icc_profile')
+    else:
+        icc_profile = ImageCms.ImageCmsProfile(io.BytesIO(template.info.get('icc_profile')))
     ''' Changes "Program name" attribute '''
     exif_dict["0th"][305] = GENERATOR_NAME
     ''' Resets thumbnail to later get automatically generated '''
@@ -216,7 +223,11 @@ def generate(cut_type, choice, fabric_type):
     file_name = fabric_name.replace(' ', '_')+"-"+cut_type+"-"+returnFabricTypeName(fabric_type)+"-36x"+str(choice)+".jpg"
 
     ''' Finally save the image as JPEG '''
-    template.convert(fabric_mode).save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", quality=100, exif=exif_bytes)
+    if (fabric_mode != "CMYK"):
+        template.convert(fabric_mode).save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", dpi=(150,150), exif=exif_bytes, quality=100, icc_profile=icc_profile, optimize=False)
+    else:
+        template = ImageCms.profileToProfile(template, icc_profile, 'sRGB Color Space Profile.icm', renderingIntent=0, outputMode='RGB')
+        template.save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", dpi=(150,150), exif=exif_bytes, quality=100, optimize=False)
 
 ''' Generate all variations or one specific '''
 if sys.argv[12] == 'all':

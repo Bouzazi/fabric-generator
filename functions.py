@@ -6,6 +6,9 @@ import string
 ''' Import config file '''
 from config import NORMAL_WIDTH
 from config import SEAMLESS_WIDTH
+from config import GENERATOR_NAME
+''' Exif manipulation '''
+import piexif
 
 ''' One fabric part '''
 class FabricPart:
@@ -129,8 +132,12 @@ def setTempColor(temp, hex, path, HEADER, randomTemplate, seamless):
     rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
     image = Image.open(path + temp + source)
 
-    # Saving metadata from source to template
-    metadata = image.info['exif']
+    ''' Exif Loaded to readable format '''
+    exif_dict = piexif.load(image.info.get('exif'))
+    ''' ICC Profile '''
+    icc_profile = image.info.get('icc_profile')
+    ''' Dumpted to bytes '''
+    exif_bytes = piexif.dump(exif_dict)
 
     image.paste( rgb, [0,HEADER,image.size[0],image.size[1]])
-    image.save(path + temp + '-' + randomTemplate + template, "JPEG", exif=metadata)
+    image.save(path + temp + '-' + randomTemplate + template, "JPEG", dpi=(150,150), exif=exif_bytes, quality=100, icc_profile=icc_profile, optimize=False)
