@@ -34,21 +34,22 @@ fabric_id = sys.argv[4] # Fabric id (5*int-5*int)
 seamless = int(sys.argv[5]) # Seamless check (0/1)
 inches = int(sys.argv[6]) # Inches
 keep_ratio = int(sys.argv[7]) # Respect ratio, for pictures in fabric
-background_color = sys.argv[8] # Custom color
-path1 = sys.argv[9] # First path, for source files (images, fonts) location.
-path2 = sys.argv[10] # Second path, for generated files location.
-path3 = sys.argv[11] # Third path, for masterfiles location.
-if sys.argv[12] != 'all': # All variations choice
-    choice = int(sys.argv[12]) # Size choice (56/42)
-    cut_type = sys.argv[13] #  Cut type (full/half/quarter)
-    fabric_type = sys.argv[14] # Fabric type (14aida/16aida/18aida/28evenweave/32evenweave/36evenweave/28linen/32linen/36linen/40linen)
+landscape = int(sys.argv[8]) # Portrait(0)/Landscape(1) mode 
+background_color = sys.argv[9] # Custom color
+path1 = sys.argv[10] # First path, for source files (images, fonts) location.
+path2 = sys.argv[11] # Second path, for generated files location.
+path3 = sys.argv[12] # Third path, for masterfiles location.
+if sys.argv[13] != 'all': # All variations choice
+    choice = int(sys.argv[13]) # Size choice (56/42)
+    cut_type = sys.argv[14] #  Cut type (full/half/quarter)
+    fabric_type = sys.argv[15] # Fabric type (14aida/16aida/18aida/28evenweave/32evenweave/36evenweave/28linen/32linen/36linen/40linen)
     try:
-        client_link = sys.argv[15]
+        client_link = sys.argv[16]
     except:
         client_link = ''
 else:
     try:
-        client_link = sys.argv[13]
+        client_link = sys.argv[14]
     except:
         client_link = ''
 
@@ -99,6 +100,10 @@ convert_mode = "RGBA"
 print("Convert mode: {}".format(convert_mode))
 
 fabric = Image.open(path3 + fabric_masterfile+'.'+fabric_extension).convert(convert_mode)
+
+''' Rotate image to landscape if set '''
+if landscape == 1:
+    fabric = fabric.rotate(90, expand=1)
 
 ''' Open template objects for later manipulation. '''
 cmyk = Image.open(CMYK_LOCATION).convert(convert_mode)
@@ -230,7 +235,7 @@ def generate(cut_type, choice, fabric_type):
         template.save(path2 + fabric_name.replace(' ', '_')+'/'+file_name, "JPEG", dpi=(150,150), exif=exif_bytes, quality=100, optimize=False)
 
 ''' Generate all variations or one specific '''
-if sys.argv[12] == 'all':
+if sys.argv[13] == 'all':
     print('Generating all 60 variations')
     for cut_type in CUT_TYPES:
         for choice in CHOICES:
